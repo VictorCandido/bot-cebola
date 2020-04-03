@@ -1,33 +1,33 @@
 const Discord = require('discord.js');
 
+const botCebs = new Discord.Client();
+
+
 const db = require('./model');
 
 db.sequelize.sync().then(() => {
     console.log('Drop and re-sync db.');
 });
 
-const bot = new Discord.Client();
 
-const botController = require('./controller/botController')
-
-const token = 'Njk1NjQ4NDEyNzM3MjA4NTAw.XodPRw.NklZsMNzPal9VhXnmGE8417EHiM';
+const token = 'Njk1NjQ4NDEyNzM3MjA4NTAw.Xod5oA.o0i7weKk5KxCoW5IANMtmhj87Xo';
 const prefix = '?';
 
 
 const Bot = db.bot;
 
 
-bot.on('ready', () => {
+botCebs.on('ready', () => {
     console.log('The bot is online!')
 })
 
-bot.on('message', async msg => {
+botCebs.on('message', async msg => {
     if (msg.content.startsWith(prefix)) {
         const message = msg.content.split(prefix)[1];
         
         if (message.includes('new frase') || message.includes('nf')) {
             let novaFrase = message.split('"')[1];
-
+            console.log('Nova mensagem -> ', novaFrase);
 
             Bot.create({ frasesDoDia: novaFrase }).then(response => {
                 msg.reply('Mensagem gravada -> ' + response.frasesDoDia)
@@ -53,4 +53,4 @@ bot.on('message', async msg => {
     }
 })
 
-bot.login(token);
+botCebs.login(token);
