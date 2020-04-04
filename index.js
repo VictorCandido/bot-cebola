@@ -1,56 +1,107 @@
-const Discord = require('discord.js');
-
-const botCebs = new Discord.Client();
-
-
+const { Client, MessageEmbed } = require('discord.js');
 const db = require('./model');
+const config = require('./config.js')
 
 db.sequelize.sync().then(() => {
     console.log('Drop and re-sync db.');
 });
 
-
-const token = 'Njk1NjQ4NDEyNzM3MjA4NTAw.Xod5oA.o0i7weKk5KxCoW5IANMtmhj87Xo';
-const prefix = '?';
-
-
+const client = new Client();
 const Bot = db.bot;
 
+client.on('ready', () => {
+    console.log('-----> The bot is running!!')
 
-botCebs.on('ready', () => {
-    console.log('The bot is online!')
-})
+    client.user.setActivity('/help')
+});
 
-botCebs.on('message', async msg => {
-    if (msg.content.startsWith(prefix)) {
-        const message = msg.content.split(prefix)[1];
-        
-        if (message.includes('new frase') || message.includes('nf')) {
-            let novaFrase = message.split('"')[1];
-            console.log('Nova mensagem -> ', novaFrase);
+client.on('message', async message => {
+    if ( !message.content.startsWith(config.prefix) ) return;
+    if ( !message.guild ) return;
 
-            Bot.create({ frasesDoDia: novaFrase }).then(response => {
-                msg.reply('Mensagem gravada -> ' + response.frasesDoDia)
-            }).catch(err => {
-                msg.reply('Falha ao cadastrar frase -> ' + err.message)
-            });
-        }
+    const messageSplit = message.content.split(' ')
+    const command = messageSplit[0];
 
-        if (message.includes('say frase') || message.includes('sf')) {
-
-            Bot.findAll().then(frases => {
-                console.log('Respose getFrases', frases)
-
-                let aleatorio = Math.floor(Math.random() * frases.length);
-                msg.reply(frases[aleatorio].frasesDoDia)
-
-            }).catch(err => {
-                console.log('Falha ao retornar frases -> ', err.message)
-            });
-
+    switch (command) {
+        case '/help':
             
-        }
-    }
-})
+            const embed = new MessageEmbed()
+            .setTitle('Help Picorruxo Bot!')
+            .setColor(0xff0000)
+            .setDescription(`
+                - /audio, para ouvir um dos audios do Cebola (audios de 0 até ${config.totalAudios-1})
+                - /frase, para ler uma frase do dia 
+            `);
+            
+            message.channel.send(embed);
 
-botCebs.login(token);
+            break;
+            
+        case '/audio':
+            
+            if (message.member.voice.channel) {
+                const chooseAudio = messageSplit[1] ? messageSplit[1] : false;
+
+                const connection = await message.member.voice.channel.join();
+        
+                let audio = '';
+
+                if (chooseAudio) {
+                    if (parseInt(chooseAudio) > config.totalAudios - 1) {
+                        message.reply('Não existe audio ' + chooseAudio + '. Audios permitidos, de 0 até ' + (config.totalAudios - 1));
+                    }
+
+                    audio = chooseAudio
+                } else {
+                    let aleatorio = Math.floor(Math.random() * config.totalAudios);
+                    audio = aleatorio
+                }
+
+                const dispatcher = connection.play(`./songs/${audio}.ogg`);
+        
+                dispatcher.on('finish', () => message.member.voice.channel.leave())
+                
+            } else {
+                message.reply('Você precisa estar em um canal de voz!');
+            }
+
+            break;
+            
+        case '/frase':
+            
+            const seccondCommand = messageSplit[1] ? messageSplit[1] : false;
+
+            if (seccondCommand) {
+                if (seccondCommand == 'create') {
+                    const frase = messageSplit[2];
+
+                    if (frase) {    
+                        Bot.create({ frasesDoDia: frase }).then(response => {
+                            msg.reply('Mensagem gravada -> ' + response.frasesDoDia)
+                        }).catch(err => {
+                            msg.reply('Falha ao cadastrar frase -> ' + err.message)
+                        });
+                    } else {
+                        msg.reply('Beleza, palerma, agora só falta vc me dizer a frase né... xD')
+                    }
+                }
+            } else {
+                Bot.findAll().then(frases => {
+                    let aleatorio = Math.floor(Math.random() * frases.length);
+
+                    const embed = new MessageEmbed()
+                    .setTitle('Frase da sorte!!')
+                    .setColor(0x00a700)
+                    .setDescription(frases[aleatorio].frasesDoDia);
+                    
+                    message.channel.send(embed);
+                }).catch(err => {
+                    console.log('Falha ao retornar frases -> ', err.message)
+                });
+            }
+
+            break;
+    }
+  });
+
+client.login(config.token);
