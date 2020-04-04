@@ -78,16 +78,16 @@ client.on('message', async message => {
 
             if (seccondCommand) {
                 if (seccondCommand == 'create') {
-                    const frase = messageSplit[2];
+                    const frase = message.content.split('"')[1];
 
                     if (frase) {    
                         Bot.create({ frasesDoDia: frase }).then(response => {
-                            msg.reply('Mensagem gravada -> ' + response.frasesDoDia)
+                            message.reply('Mensagem gravada -> ' + response.frasesDoDia)
                         }).catch(err => {
-                            msg.reply('Falha ao cadastrar frase -> ' + err.message)
+                            message.reply('Falha ao cadastrar frase -> ' + err.message)
                         });
                     } else {
-                        msg.reply('Beleza, palerma, agora só falta vc me dizer a frase né... xD')
+                        message.reply('Beleza, palerma, agora só falta vc me dizer a frase né... xD')
                     }
                 }
             } else {
