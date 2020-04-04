@@ -11,6 +11,9 @@ const Bot = db.bot;
 
 const totalAudios = process.env.totalAudios || config.totalAudios
 
+console.log(totalAudios)
+console.log(process.env.token || config.token)
+
 client.on('ready', () => {
     console.log('-----> The bot is running!!')
 
