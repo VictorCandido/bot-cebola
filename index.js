@@ -9,6 +9,8 @@ db.sequelize.sync().then(() => {
 const client = new Client();
 const Bot = db.bot;
 
+const totalAudios = process.env.totalAudios || config.totalAudios
+
 client.on('ready', () => {
     console.log('-----> The bot is running!!')
 
@@ -29,7 +31,7 @@ client.on('message', async message => {
             .setTitle('Help Picorruxo Bot!')
             .setColor(0xff0000)
             .setDescription(`
-                - /audio, para ouvir um dos audios do Cebola (audios de 0 até ${config.totalAudios-1})
+                - /audio, para ouvir um dos audios do Cebola (audios de 0 até ${totalAudios-1})
                 - /frase, para ler uma frase do dia 
             `);
             
@@ -47,13 +49,13 @@ client.on('message', async message => {
                 let audio = '';
 
                 if (chooseAudio) {
-                    if (parseInt(chooseAudio) > config.totalAudios - 1) {
-                        message.reply('Não existe audio ' + chooseAudio + '. Audios permitidos, de 0 até ' + (config.totalAudios - 1));
+                    if (parseInt(chooseAudio) > totalAudios - 1) {
+                        message.reply('Não existe audio ' + chooseAudio + '. Audios permitidos, de 0 até ' + (totalAudios - 1));
                     }
 
                     audio = chooseAudio
                 } else {
-                    let aleatorio = Math.floor(Math.random() * config.totalAudios);
+                    let aleatorio = Math.floor(Math.random() * totalAudios);
                     audio = aleatorio
                 }
 
@@ -104,4 +106,4 @@ client.on('message', async message => {
     }
   });
 
-client.login(config.token);
+client.login(process.env.token || config.token);
