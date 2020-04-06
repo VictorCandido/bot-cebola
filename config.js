@@ -1,5 +1,5 @@
 module.exports = {
-    token: 'Njk1NjQ4NDEyNzM3MjA4NTAw.Xofg3w.GaI8V_TnzgJXpgn3FKmBBLpPPwM',
+    token: 'Njk1NjQ4NDEyNzM3MjA4NTAw.XosWag.gommAjZvdyKvWwI3qM4wPxep7HM',
     prefix: '/',
     totalAudios: 11
 }
