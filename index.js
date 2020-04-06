@@ -1,6 +1,6 @@
 const { Client, MessageEmbed } = require('discord.js');
 const db = require('./model');
-const { token } = require('./config')
+// const { token } = require('./config')
 
 db.sequelize.sync().then(() => {
     console.log('Drop and re-sync db.');
