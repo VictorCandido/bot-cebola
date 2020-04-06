@@ -1,6 +1,6 @@
 const { Client, MessageEmbed } = require('discord.js');
 const db = require('./model');
-const config = require('./config/config.js')
+const { token } = require('./config')
 
 db.sequelize.sync().then(() => {
     console.log('Drop and re-sync db.');
@@ -9,10 +9,12 @@ db.sequelize.sync().then(() => {
 const client = new Client();
 const Bot = db.bot;
 
-const totalAudios = process.env.totalAudios || config.totalAudios
+const prefix = '/'
+
+const totalAudios = 11
 
 console.log(totalAudios)
-console.log(process.env.token || config.token)
+console.log(process.env.token || token)
 
 client.on('ready', () => {
     console.log('-----> The bot is running!!')
@@ -21,7 +23,7 @@ client.on('ready', () => {
 });
 
 client.on('message', async message => {
-    if ( !message.content.startsWith(config.prefix) ) return;
+    if ( !message.content.startsWith(prefix) ) return;
     if ( !message.guild ) return;
 
     const messageSplit = message.content.split(' ')
@@ -109,4 +111,4 @@ client.on('message', async message => {
     }
   });
 
-client.login(process.env.token || config.token);
+client.login(process.env.token || token);
