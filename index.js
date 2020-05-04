@@ -1,6 +1,6 @@
 const { Client, MessageEmbed } = require('discord.js');
 const db = require('./model');
-// const { token } = require('./config')
+const { token } = require('./config')
 
 db.sequelize.sync().then(() => {
     console.log('Drop and re-sync db.');
@@ -11,7 +11,7 @@ const Bot = db.bot;
 
 const prefix = '/'
 
-const totalAudios = 11
+const totalAudios = 22
 
 console.log(totalAudios)
 console.log(process.env.token || token)
@@ -109,6 +109,27 @@ client.on('message', async message => {
 
             break;
     }
-  });
+});
+
+// client.on('voiceStateUpdate', async (oldState, newState) => {
+//     if (newState.id == 234395307759108106) return;
+//     if (newState.id == 695648412737208500) return;
+
+//     const connection = await newState.channel.join();
+
+//     let audio = 0;
+
+//     if (newState.id != 253903962867105792) {
+//         let aleatorio = Math.floor(Math.random() * totalAudios);
+//         audio = aleatorio
+//     } else {
+//         audio = 4;
+//     }
+
+//     const dispatcher = connection.play(`./songs/${audio}.ogg`);
+
+//     dispatcher.on('finish', () => connection.disconnect())
+    
+// })
 
 client.login(process.env.token || token);
